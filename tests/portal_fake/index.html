@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Portal de Movimentações (fake)</title>
+<style>
+  body { font-family: sans-serif; max-width: 720px; margin: 40px auto; }
+  section { display: none; }
+  section.ativa { display: block; }
+  label { display: block; margin-top: 8px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+  th, td { border: 1px solid #ccc; padding: 4px 8px; text-align: left; }
+  .erro { color: #b00; }
+</style>
+</head>
+<body>
+<!--
+  Portal FAKE usado pelo exemplo e pelos testes do template. Não representa nenhum sistema real.
+  Quantidade de movimentações por agência: 0001 = 12 (3 páginas), 0002 = 3, 0003 = 0, outras = 7.
+  Bug simulado: agência 9999 informa 1 registro a mais no total do que mostra na tabela.
+  As consultas e a troca de página respondem com atraso, como um sistema real.
+-->
+<section id="login">
+  <h1>Acesso ao portal</h1>
+  <form id="form-login">
+    <label>Usuário <input name="usuario" autocomplete="username"></label>
+    <label>Senha <input name="senha" type="password"></label>
+    <p class="erro" id="erro-login" role="alert"></p>
+    <button type="submit">Entrar</button>
+  </form>
+</section>
+
+<section id="consulta">
+  <h1>Consulta de movimentações</h1>
+  <form id="form-consulta">
+    <label>Agência <input name="agencia" maxlength="4" required></label>
+    <label>Competência <input name="competencia" placeholder="AAAA-MM" required></label>
+    <button type="submit">Consultar</button>
+  </form>
+
+  <div id="resultado" hidden>
+    <p data-testid="total-registros"></p>
+    <p id="vazio" hidden>Nenhuma movimentação encontrada.</p>
+    <div id="com-dados">
+      <table aria-label="Movimentações">
+        <thead><tr><th>Data</th><th>Histórico</th><th>Documento</th><th>Valor</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p>
+        <button type="button" id="anterior">Página anterior</button>
+        <span data-testid="pagina-atual"></span>
+        <button type="button" id="proxima">Próxima página</button>
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const POR_PAGINA = 5;
+  const HISTORICOS = ['TED RECEBIDA', 'PIX ENVIADO', 'TARIFA PACOTE', 'DEPÓSITO'];
+  const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  const $ = (id) => document.getElementById(id);
+  const mostrar = (id) => document.querySelectorAll('section').forEach((s) => s.classList.toggle('ativa', s.id === id));
+  let movimentos = [];
+  let pagina = 1;
+
+  function gerar(agencia, competencia) {
+    const quantidade = { '0001': 12, '0002': 3, '0003': 0, '9999': 12 }[agencia] ?? 7;
+    const [ano, mes] = competencia.split('-');
+    return Array.from({ length: quantidade }, (_, i) => ({
+      data: `${String((i % 28) + 1).padStart(2, '0')}/${mes}/${ano}`,
+      historico: HISTORICOS[i % HISTORICOS.length],
+      documento: `${agencia}${String(i + 1).padStart(5, '0')}`,
+      valor: (i % 2 ? -1 : 1) * (i + 1) * 123.45,
+    }));
+  }
+
+  function renderizar() {
+    const paginas = Math.max(1, Math.ceil(movimentos.length / POR_PAGINA));
+    const inicio = (pagina - 1) * POR_PAGINA;
+    document.querySelector('tbody').innerHTML = movimentos.slice(inicio, inicio + POR_PAGINA)
+      .map((m) => `<tr><td>${m.data}</td><td>${m.historico}</td><td>${m.documento}</td><td>${brl.format(m.valor)}</td></tr>`)
+      .join('');
+    document.querySelector('[data-testid=pagina-atual]').textContent = `Página ${pagina} de ${paginas}`;
+    $('anterior').disabled = pagina === 1;
+    $('proxima').disabled = pagina === paginas;
+  }
+
+  $('form-login').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const f = e.target;
+    if (!f.usuario.value || !f.senha.value) {
+      $('erro-login').textContent = 'Usuário e senha obrigatórios';
+      return;
+    }
+    localStorage.setItem('logado', '1');
+    mostrar('consulta');
+  });
+
+  $('form-consulta').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const f = e.target;
+    $('resultado').hidden = true;
+    setTimeout(() => {
+      movimentos = gerar(f.agencia.value, f.competencia.value);
+      pagina = 1;
+      const total = movimentos.length + (f.agencia.value === '9999' ? 1 : 0);
+      document.querySelector('[data-testid=total-registros]').textContent = `Total de registros: ${total}`;
+      $('vazio').hidden = total > 0;
+      $('com-dados').hidden = total === 0;
+      renderizar();
+      $('resultado').hidden = false;
+    }, 300);
+  });
+
+  const trocarPagina = (delta) => setTimeout(() => { pagina += delta; renderizar(); }, 200);
+  $('proxima').addEventListener('click', () => trocarPagina(1));
+  $('anterior').addEventListener('click', () => trocarPagina(-1));
+
+  mostrar(localStorage.getItem('logado') ? 'consulta' : 'login');
+</script>
+</body>
+</html>
