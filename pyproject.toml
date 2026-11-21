@@ -1,0 +1,73 @@
+[project]
+name = "automacao-core"
+# Ao mudar o padrão: suba a versão aqui e crie a tag vX.Y.Z no repositório. Os robôs instalam pela tag.
+version = "1.0.0"
+description = "Padrão dos robôs de extração de dados web (Playwright + requests): core e estrutura do robô"
+requires-python = ">=3.11"
+dependencies = [
+    "playwright>=1.48",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "requests>=2.32",
+]
+
+[project.optional-dependencies]
+# Só para automações que precisam controlar o desktop: uv sync --extra desktop
+desktop = ["pyautogui>=0.9.54"]
+# Saída em Excel: uv sync --extra excel
+excel = ["openpyxl>=3.1"]
+# Banco de dados (saída e monitoramento): uv sync --extra banco. Já inclui o driver do MySQL (PyMySQL).
+banco = ["pymysql>=1.1", "sqlalchemy>=2.0"]
+
+[project.scripts]
+automacao = "core.__main__:main"
+
+[project.entry-points.pytest11]
+# Fixtures api_fake e servir_pasta disponíveis nos testes de todo robô
+automacao = "core.testes"
+
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["core"]
+
+# Arquivos que viram a estrutura do robô (automacao iniciar/atualizar). Lista igual a core/modelo.py
+[tool.hatch.build.targets.wheel.force-include]
+".github/copilot-instructions.md" = "core/_modelo/.github/copilot-instructions.md"
+".github/prompts" = "core/_modelo/.github/prompts"
+"CLAUDE.md" = "core/_modelo/CLAUDE.md"
+"scripts" = "core/_modelo/scripts"
+"docs/modelos" = "core/_modelo/docs/modelos"
+"docs/monitoramento" = "core/_modelo/docs/monitoramento"
+"docs/padroes/README.md" = "core/_modelo/docs/padroes/README.md"
+"docs/requisicoes/README.md" = "core/_modelo/docs/requisicoes/README.md"
+"docs/passo_a_passo.md" = "core/_modelo/docs/passo_a_passo.md"
+"README.md" = "core/_modelo/README.md"
+"projeto" = "core/_modelo/projeto"
+"tests/conftest.py" = "core/_modelo/tests/conftest.py"
+"tests/test_exemplo_extracao.py" = "core/_modelo/tests/test_exemplo_extracao.py"
+"tests/portal_fake" = "core/_modelo/tests/portal_fake"
+"dados/entrada/consultas.csv" = "core/_modelo/dados/entrada/consultas.csv"
+"docs/pdd.md" = "core/_modelo/docs/pdd.md"
+"docs/duvidas.md" = "core/_modelo/docs/duvidas.md"
+"docs/transcricao/.gitkeep" = "core/_modelo/docs/transcricao/.gitkeep"
+"docs/documento_cliente/.gitkeep" = "core/_modelo/docs/documento_cliente/.gitkeep"
+"docs/screenshots/.gitkeep" = "core/_modelo/docs/screenshots/.gitkeep"
+"docs/recordings/.gitkeep" = "core/_modelo/docs/recordings/.gitkeep"
+".env.example" = "core/_modelo/.env.example"
+".gitignore" = "core/_modelo/.gitignore"
+".vscode/mcp.json" = "core/_modelo/.vscode/mcp.json"
+".python-version" = "core/_modelo/.python-version"
+
+[dependency-groups]
+# python-docx: exportar o PDD para Word. openpyxl/sqlalchemy: testes das saídas.
+dev = ["openpyxl>=3.1", "pytest>=8", "python-docx>=1.1", "ruff>=0.6", "sqlalchemy>=2.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 110

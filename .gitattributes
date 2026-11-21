@@ -1,0 +1,12 @@
+# Quebras de linha padronizadas no repositório (LF); scripts do Windows com CRLF
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binários
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.docx binary
+*.xlsx binary

@@ -1,0 +1,55 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Segredos e sessões de login
+.env
+storage_state*.json
+
+# Saídas de execução (contêm dados sensíveis: telas, HTML, traces)
+evidencias/
+logs/
+*.db
+*.lock
+!uv.lock
+*.agenda.json
+dados/saida/
+
+# Dados do cliente: transcrições, documento do cliente, prints de telas reais e arquivos para envio
+docs/transcricao/*
+!docs/transcricao/.gitkeep
+docs/documento_cliente/*
+!docs/documento_cliente/.gitkeep
+docs/screenshots/*
+!docs/screenshots/.gitkeep
+docs/envio/
+
+# Gravações do codegen: o login digitado (usuário e senha) fica no código gravado
+docs/recordings/*
+!docs/recordings/.gitkeep
+
+# Cópia da tarefa agendada (gerada por scripts/agendar.ps1; é da máquina, não do robô)
+agendamento/
+*.execucoes.json
+navegadores/
+docs/fases.html
+
+# Gravações de requisições: cookies, tokens e dados reais (o resumo .resumo.md pode ser versionado)
+*.har
+
+# Só local: roteiro do teste da estrutura no ambiente da empresa
+docs/roteiro_teste_estrutura.md
+
+# IDE e sistema (mcp.json é do padrão e versionado)
+.idea/
+.vscode/*
+!.vscode/mcp.json
+.DS_Store
+Thumbs.db
+
+# Build do pacote
+dist/
+build/
+*.egg-info/
