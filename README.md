@@ -38,7 +38,7 @@ O padrão é distribuído como o pacote **`automacao-core`**, instalado direto d
 ```powershell
 mkdir extracao-test; cd extracao-test
 uv init --bare
-uv add "automacao-core @ git+https://<servidor-git>/<grupo>/automacao-template.git@v1.0.0"
+uv add "automacao-core @ git+https://<servidor-git>/<grupo>/pdd-to-prod.git@v1.0.0"
 uv run automacao iniciar        # cria projeto/, docs/, tests/, scripts/, .github/, .env.example...
 uv sync
 git init; git remote add origin https://<servidor-git>/<grupo>/extracao-test.git
@@ -56,7 +56,7 @@ O `core` não é copiado para a pasta do robô: ele fica instalado no `.venv` e 
 ### Atualizando um robô para uma versão nova do padrão
 
 ```powershell
-uv add "automacao-core @ git+https://<servidor-git>/<grupo>/automacao-template.git@v1.1.0"
+uv add "automacao-core @ git+https://<servidor-git>/<grupo>/pdd-to-prod.git@v1.1.0"
 uv run automacao atualizar      # renova prompts, scripts e instruções; mostra o que mudou
 uv run pytest
 ```

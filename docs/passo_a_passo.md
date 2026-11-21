@@ -22,7 +22,7 @@ Nos comandos, troque `<servidor-git>/<grupo>` pelo endereço real e `extracao-te
 
 4. **Instale o padrão** (o `automacao-core`, do repositório Git):
    ```powershell
-   uv add "automacao-core @ git+https://<servidor-git>/<grupo>/automacao-template.git@v1.0.0"
+   uv add "automacao-core @ git+https://<servidor-git>/<grupo>/pdd-to-prod.git@v1.0.0"
    ```
    Se a saída for em Excel ou banco: `automacao-core[excel]`, `automacao-core[banco]` ou `automacao-core[excel,banco]`.
 
@@ -218,7 +218,7 @@ Para atualizar um robô que já existe:
 
 1. **Suba a versão do pacote:**
    ```powershell
-   uv add "automacao-core @ git+https://<servidor-git>/<grupo>/automacao-template.git@v1.1.0"
+   uv add "automacao-core @ git+https://<servidor-git>/<grupo>/pdd-to-prod.git@v1.1.0"
    ```
 2. **Renove os arquivos do padrão.** São trocados só prompts, scripts e instruções; o código do robô e o PDD ficam como estão:
    ```powershell
